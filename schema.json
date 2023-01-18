@@ -1,0 +1,77 @@
+{
+  "title": "Config",
+  "version": 1,
+  "type": "object",
+  "properties": {
+    "watchInterval": {
+      "title": "Watch Interval",
+      "description": "How often to check for changes. Must be written in milliseconds.",
+      "type": "number",
+      "minimum": 1
+    },
+    "watchFolders": {
+      "title": "Watch Folders",
+      "description": "Folders to watch for changes.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "title": "Path",
+            "description": "The path to the folder to watch.",
+            "type": "string"
+          },
+          "ignoreDotFiles": {
+            "title": "Ignore Dot Files",
+            "description": "Whether to ignore dot files.",
+            "type": "boolean"
+          },
+          "conditions": {
+            "title": "Conditions",
+            "description": "Conditions to check for.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "title": "Type",
+                  "description": "The type of file to check for.\n\nOptions: file, folder, any",
+                  "type": "string",
+                  "enum": ["file", "folder", "any"]
+                },
+                "pattern": {
+                  "title": "Pattern",
+                  "description": "The pattern to check for changes. Must be written in Regular Expression with backslash escaped.",
+                  "type": "string"
+                },
+                "action": {
+                  "title": "Action",
+                  "description": "The action to take when the condition is met.\n\nOptions: move, delete",
+                  "type": "string",
+                  "enum": ["move", "delete"]
+                },
+                "destination": {
+                  "title": "Destination",
+                  "description": "The destination to move or copy the file to. If action is delete, this is ignored.",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "noMatchedAction": {
+            "title": "No Matched Action",
+            "description": "The action to take when no conditions are met.\n\nOptions: none, move, delete",
+            "type": "string",
+            "enum": ["none", "move", "delete"]
+          },
+          "noMatchedDestination": {
+            "title": "No Matched Destination",
+            "description": "The destination to move or copy the file to. If noMatchedAction is none or delete, this is ignored.",
+            "type": "string",
+            "required": false
+          }
+        }
+      }
+    }
+  }
+}

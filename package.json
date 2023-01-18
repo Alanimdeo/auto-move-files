@@ -1,0 +1,13 @@
+{
+  "name": "auto-move-files",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "Alanimdeo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.11.18"
+  },
+  "dependencies": {
+    "chokidar": "^3.5.3"
+  }
+}
