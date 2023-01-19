@@ -42,7 +42,9 @@ async function addWatch(options) {
     const watcher = chokidar_1.default.watch(options.path, {
         ignored: options.ignoreDotFiles ? ignoreDotFiles : undefined,
         ignoreInitial: true,
-        usePolling: true,
+        usePolling: options.usePolling,
+        interval: options.pollingInterval,
+        binaryInterval: options.pollingInterval,
         persistent: true,
     });
     watcher.on("ready", () => {

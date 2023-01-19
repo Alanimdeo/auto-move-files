@@ -3,12 +3,13 @@ import chokidar from "chokidar";
 import { readFile, rename, rm } from "fs/promises";
 
 interface Config {
-  watchInterval: number;
   watchFolders: WatchFolder[];
 }
 
 interface WatchFolder {
   path: string;
+  usePolling?: boolean;
+  pollingInterval?: number;
   ignoreDotFiles: boolean;
   conditions: WatchCondition[];
   noMatchedAction: "none" | "move" | "delete";
@@ -68,7 +69,9 @@ async function addWatch(options: WatchFolder) {
   const watcher = chokidar.watch(options.path, {
     ignored: options.ignoreDotFiles ? ignoreDotFiles : undefined,
     ignoreInitial: true,
-    usePolling: true,
+    usePolling: options.usePolling,
+    interval: options.pollingInterval,
+    binaryInterval: options.pollingInterval,
     persistent: true,
   });
   watcher.on("ready", () => {

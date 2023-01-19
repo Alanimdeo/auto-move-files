@@ -3,12 +3,6 @@
   "version": "1.2.0",
   "type": "object",
   "properties": {
-    "watchInterval": {
-      "title": "Watch Interval",
-      "description": "How often to check for changes. Must be written in milliseconds.",
-      "type": "number",
-      "minimum": 1
-    },
     "watchFolders": {
       "title": "Watch Folders",
       "description": "Folders to watch for changes.",
@@ -20,6 +14,19 @@
             "title": "Path",
             "description": "The path to the folder to watch.",
             "type": "string"
+          },
+          "usePolling": {
+            "title": "Use Polling",
+            "description": "If your folder is on a network drive, you may need to enable this option.",
+            "type": "boolean",
+            "required": false
+          },
+          "pollingInterval": {
+            "title": "Polling Interval",
+            "description": "Using polling can cause high CPU usage. This option allows you to set how often to check for changes so you can adjust CPU usage. Must be written in milliseconds.\n\nDefault: 100",
+            "type": "number",
+            "minimum": 1,
+            "required": false
           },
           "ignoreDotFiles": {
             "title": "Ignore Dot Files",
