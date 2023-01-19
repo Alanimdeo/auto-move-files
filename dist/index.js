@@ -54,7 +54,6 @@ async function addWatch(options) {
     return watcher;
 }
 async function onAdd(type, file, options) {
-    console.log(`File ${file} added or changed`);
     const checkResult = await getConditionMatch(type, file, options.conditions);
     let filename = path_1.default.basename(file);
     if (checkResult && checkResult.action == "move") {

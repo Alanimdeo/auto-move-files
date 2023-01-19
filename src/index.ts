@@ -82,7 +82,6 @@ async function addWatch(options: WatchFolder) {
 }
 
 async function onAdd(type: "file" | "folder", file: string, options: WatchFolder) {
-  console.log(`File ${file} added or changed`);
   const checkResult = await getConditionMatch(type, file, options.conditions);
   let filename = path.basename(file);
   if (checkResult && checkResult.action == "move") {
