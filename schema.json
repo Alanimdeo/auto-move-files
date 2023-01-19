@@ -1,6 +1,6 @@
 {
   "title": "Config",
-  "version": 1,
+  "version": "1.1.0",
   "type": "object",
   "properties": {
     "watchInterval": {
@@ -52,8 +52,27 @@
                 },
                 "destination": {
                   "title": "Destination",
-                  "description": "The destination to move or copy the file to. If action is delete, this is ignored.",
-                  "type": "string"
+                  "description": "The destination to move or copy the file to.\nIf action is delete, this is ignored.",
+                  "type": "string",
+                  "required": false
+                },
+                "renamePattern": {
+                  "title": "Rename Pattern",
+                  "description": "The pattern to rename the file to.\nIf this is not set, the file will not be renamed.\nIf action is delete, this is ignored.",
+                  "type": "object",
+                  "required": false,
+                  "properties": {
+                    "searchValue": {
+                      "title": "Search Value",
+                      "description": "The value to search for. Must be written in Regular Expression with backslash escaped.",
+                      "type": "string"
+                    },
+                    "replaceValue": {
+                      "title": "Replace Value",
+                      "description": "The value to replace the search value with. Must be written in Regular Expression with backslash escaped. You can use replace methods such as $1, $2, $3, etc.",
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }

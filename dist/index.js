@@ -42,6 +42,7 @@ async function addWatch(options) {
     const watcher = chokidar_1.default.watch(options.path, {
         ignored: options.ignoreDotFiles ? ignoreDotFiles : undefined,
         ignoreInitial: true,
+        usePolling: true,
         persistent: true,
     });
     watcher.on("ready", () => {
@@ -49,13 +50,21 @@ async function addWatch(options) {
     });
     watcher.on("add", async (file) => await onAdd("file", file, options));
     watcher.on("addDir", async (folder) => await onAdd("folder", folder, options));
+    watcher.on("change", async (file) => await onAdd("file", file, options));
     return watcher;
 }
 async function onAdd(type, file, options) {
+    console.log(`File ${file} added or changed`);
     const checkResult = await getConditionMatch(type, file, options.conditions);
-    const filename = path_1.default.basename(file);
+    let filename = path_1.default.basename(file);
     if (checkResult && checkResult.action == "move") {
-        console.log(`Moving ${filename} to ${checkResult.destination}`);
+        if (!checkResult.destination) {
+            throw new Error("destination is required when action is set to move");
+        }
+        if (checkResult.renamePattern) {
+            filename = filename.replace(new RegExp(checkResult.renamePattern.searchValue), checkResult.renamePattern.replaceValue);
+        }
+        console.log(`Moving ${filename} to ${checkResult.destination} with filename ${filename}`);
         await (0, promises_1.rename)(file, path_1.default.join(checkResult.destination, filename));
     }
     else if (checkResult && checkResult.action == "delete") {
@@ -77,7 +86,7 @@ async function getConditionMatch(type, path, conditions) {
             condition.pattern = new RegExp(condition.pattern);
         }
         if ((condition.type === "any" || condition.type === type) && condition.pattern.test(path)) {
-            return { destination: condition.destination, action: condition.action };
+            return condition;
         }
     }
     return false;

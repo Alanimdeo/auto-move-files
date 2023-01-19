@@ -19,7 +19,11 @@ interface WatchCondition {
   type: "file" | "folder" | "any";
   pattern: string | RegExp;
   action: "move" | "delete";
-  destination: string;
+  destination?: string;
+  renamePattern?: {
+    searchValue: string | RegExp;
+    replaceValue: string;
+  };
 }
 
 async function loadConfig() {
@@ -63,6 +67,7 @@ async function addWatch(options: WatchFolder) {
   const watcher = chokidar.watch(options.path, {
     ignored: options.ignoreDotFiles ? ignoreDotFiles : undefined,
     ignoreInitial: true,
+    usePolling: true,
     persistent: true,
   });
   watcher.on("ready", () => {
@@ -70,16 +75,27 @@ async function addWatch(options: WatchFolder) {
   });
   watcher.on("add", async (file) => await onAdd("file", file, options));
   watcher.on("addDir", async (folder) => await onAdd("folder", folder, options));
+  watcher.on("change", async (file) => await onAdd("file", file, options));
 
   return watcher;
 }
 
 async function onAdd(type: "file" | "folder", file: string, options: WatchFolder) {
+  console.log(`File ${file} added or changed`);
   const checkResult = await getConditionMatch(type, file, options.conditions);
-  const filename = path.basename(file);
+  let filename = path.basename(file);
   if (checkResult && checkResult.action == "move") {
-    console.log(`Moving ${filename} to ${checkResult.destination}`);
-    await rename(file, path.join(checkResult.destination, filename));
+    if (!checkResult.destination) {
+      throw new Error("destination is required when action is set to move");
+    }
+    if (checkResult.renamePattern) {
+      filename = filename.replace(
+        new RegExp(checkResult.renamePattern.searchValue),
+        checkResult.renamePattern.replaceValue
+      );
+    }
+    console.log(`Moving ${filename} to ${checkResult.destination} with filename ${filename}`);
+    await rename(file, path.join(checkResult.destination!, filename));
   } else if (checkResult && checkResult.action == "delete") {
     console.log(`Deleting ${filename}`);
     await rm(file);
@@ -98,7 +114,7 @@ async function getConditionMatch(type: "file" | "folder", path: string, conditio
       condition.pattern = new RegExp(condition.pattern);
     }
     if ((condition.type === "any" || condition.type === type) && condition.pattern.test(path)) {
-      return { destination: condition.destination, action: condition.action };
+      return condition;
     }
   }
   return false;
