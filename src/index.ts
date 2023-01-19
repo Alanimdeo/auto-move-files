@@ -86,6 +86,7 @@ async function addWatch(options: WatchFolder) {
 
 async function onAdd(type: "file" | "folder", file: string, options: WatchFolder) {
   const checkResult = await getConditionMatch(type, file, options.conditions);
+  const originalFilename = path.basename(file);
   let filename = path.basename(file);
   if (checkResult && checkResult.action == "move") {
     if (!checkResult.destination) {
@@ -103,7 +104,11 @@ async function onAdd(type: "file" | "folder", file: string, options: WatchFolder
       );
       filename += extension;
     }
-    console.log(`Moving ${filename} to ${checkResult.destination} with filename ${filename}`);
+    console.log(
+      `Moving ${originalFilename} to ${checkResult.destination}` + checkResult.renamePattern
+        ? ` with filename ${filename}`
+        : ""
+    );
     await rename(file, path.join(checkResult.destination, filename));
   } else if (checkResult && checkResult.action == "delete") {
     console.log(`Deleting ${filename}`);

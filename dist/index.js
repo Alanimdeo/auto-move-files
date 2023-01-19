@@ -57,6 +57,7 @@ async function addWatch(options) {
 }
 async function onAdd(type, file, options) {
     const checkResult = await getConditionMatch(type, file, options.conditions);
+    const originalFilename = path_1.default.basename(file);
     let filename = path_1.default.basename(file);
     if (checkResult && checkResult.action == "move") {
         if (!checkResult.destination) {
@@ -71,7 +72,9 @@ async function onAdd(type, file, options) {
             filename = filename.replace(new RegExp(checkResult.renamePattern.searchValue), checkResult.renamePattern.replaceValue);
             filename += extension;
         }
-        console.log(`Moving ${filename} to ${checkResult.destination} with filename ${filename}`);
+        console.log(`Moving ${originalFilename} to ${checkResult.destination}` + checkResult.renamePattern
+            ? ` with filename ${filename}`
+            : "");
         await (0, promises_1.rename)(file, path_1.default.join(checkResult.destination, filename));
     }
     else if (checkResult && checkResult.action == "delete") {
