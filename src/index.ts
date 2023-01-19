@@ -23,6 +23,7 @@ interface WatchCondition {
   renamePattern?: {
     searchValue: string | RegExp;
     replaceValue: string;
+    excludeExtension?: boolean;
   };
 }
 
@@ -50,11 +51,11 @@ async function main() {
     config = await loadConfig();
     watchers.splice(0, watchers.length);
     for (const options of config.watchFolders) {
-      await addWatch(options);
+      watchers.push(await addWatch(options));
     }
   });
   for (const options of config.watchFolders) {
-    await addWatch(options);
+    watchers.push(await addWatch(options));
   }
 }
 
@@ -89,13 +90,19 @@ async function onAdd(type: "file" | "folder", file: string, options: WatchFolder
       throw new Error("destination is required when action is set to move");
     }
     if (checkResult.renamePattern) {
+      let extension = "";
+      if (checkResult.renamePattern.excludeExtension) {
+        extension = path.extname(filename);
+        filename = filename.replace(extension, "");
+      }
       filename = filename.replace(
         new RegExp(checkResult.renamePattern.searchValue),
         checkResult.renamePattern.replaceValue
       );
+      filename += extension;
     }
     console.log(`Moving ${filename} to ${checkResult.destination} with filename ${filename}`);
-    await rename(file, path.join(checkResult.destination!, filename));
+    await rename(file, path.join(checkResult.destination, filename));
   } else if (checkResult && checkResult.action == "delete") {
     console.log(`Deleting ${filename}`);
     await rm(file);

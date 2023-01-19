@@ -71,6 +71,11 @@
                       "title": "Replace Value",
                       "description": "The value to replace the search value with. Must be written in Regular Expression with backslash escaped. You can use replace methods such as $1, $2, $3, etc.",
                       "type": "string"
+                    },
+                    "excludeExtension": {
+                      "title": "Exclude Extension",
+                      "description": "Whether to Exclude the file extension in the rename.\n\nDefault: false",
+                      "type": "boolean"
                     }
                   }
                 }

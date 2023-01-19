@@ -27,11 +27,11 @@ async function main() {
         config = await loadConfig();
         watchers.splice(0, watchers.length);
         for (const options of config.watchFolders) {
-            await addWatch(options);
+            watchers.push(await addWatch(options));
         }
     });
     for (const options of config.watchFolders) {
-        await addWatch(options);
+        watchers.push(await addWatch(options));
     }
 }
 async function addWatch(options) {
@@ -62,7 +62,13 @@ async function onAdd(type, file, options) {
             throw new Error("destination is required when action is set to move");
         }
         if (checkResult.renamePattern) {
+            let extension = "";
+            if (checkResult.renamePattern.excludeExtension) {
+                extension = path_1.default.extname(filename);
+                filename = filename.replace(extension, "");
+            }
             filename = filename.replace(new RegExp(checkResult.renamePattern.searchValue), checkResult.renamePattern.replaceValue);
+            filename += extension;
         }
         console.log(`Moving ${filename} to ${checkResult.destination} with filename ${filename}`);
         await (0, promises_1.rename)(file, path_1.default.join(checkResult.destination, filename));
