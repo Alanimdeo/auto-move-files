@@ -122,12 +122,13 @@ async function onAdd(type: "file" | "folder", file: string, options: WatchFolder
   }
 }
 
-async function getConditionMatch(type: "file" | "folder", path: string, conditions: WatchCondition[]) {
+async function getConditionMatch(type: "file" | "folder", file: string, conditions: WatchCondition[]) {
+  const filename = path.basename(file);
   for (const condition of conditions) {
     if (typeof condition.pattern === "string") {
       condition.pattern = new RegExp(condition.pattern);
     }
-    if ((condition.type === "any" || condition.type === type) && condition.pattern.test(path)) {
+    if ((condition.type === "any" || condition.type === type) && condition.pattern.test(filename)) {
       return condition;
     }
   }

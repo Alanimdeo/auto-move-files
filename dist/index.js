@@ -90,12 +90,13 @@ async function onAdd(type, file, options) {
         await (0, promises_1.rm)(file);
     }
 }
-async function getConditionMatch(type, path, conditions) {
+async function getConditionMatch(type, file, conditions) {
+    const filename = path_1.default.basename(file);
     for (const condition of conditions) {
         if (typeof condition.pattern === "string") {
             condition.pattern = new RegExp(condition.pattern);
         }
-        if ((condition.type === "any" || condition.type === type) && condition.pattern.test(path)) {
+        if ((condition.type === "any" || condition.type === type) && condition.pattern.test(filename)) {
             return condition;
         }
     }
