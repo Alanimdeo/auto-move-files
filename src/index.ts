@@ -98,16 +98,16 @@ async function onAdd(type: "file" | "folder", file: string, options: WatchFolder
         extension = path.extname(filename);
         filename = filename.replace(extension, "");
       }
-      filename = filename.replace(
-        new RegExp(checkResult.renamePattern.searchValue),
-        checkResult.renamePattern.replaceValue
-      );
+      const exec = new RegExp(checkResult.renamePattern.searchValue)
+        .exec(filename)
+        ?.map((e) => (isNaN(Number(e)) ? e : Number(e)));
+      const replaceValue = eval("`" + checkResult.renamePattern.replaceValue + "`");
+      filename = filename.replace(new RegExp(checkResult.renamePattern.searchValue), replaceValue);
       filename += extension;
     }
     console.log(
-      `Moving ${originalFilename} to ${checkResult.destination}` + checkResult.renamePattern
-        ? ` with filename ${filename}`
-        : ""
+      `Moving ${originalFilename} to ${checkResult.destination}` +
+        (checkResult.renamePattern ? ` with filename ${filename}` : "")
     );
     await rename(file, path.join(checkResult.destination, filename));
   } else if (checkResult && checkResult.action == "delete") {

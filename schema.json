@@ -1,6 +1,6 @@
 {
   "title": "Config",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "type": "object",
   "properties": {
     "watchFolders": {
@@ -76,7 +76,7 @@
                     },
                     "replaceValue": {
                       "title": "Replace Value",
-                      "description": "The value to replace the search value with. Must be written in Regular Expression with backslash escaped. You can use replace methods such as $1, $2, $3, etc.",
+                      "description": "The value to replace the search value with. Must be written in Regular Expression with backslash escaped.\nYou can use replace methods such as $1, $2, $3, etc.\nYou can also use Template literals. Pre-defined variable: ${exec} = RegExpExecArray",
                       "type": "string"
                     },
                     "excludeExtension": {
